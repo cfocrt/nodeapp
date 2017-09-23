@@ -1,22 +1,19 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var exphbs = require('express-handlebars');
-var expressValidator = require('express-validator');
-var flash = require('connect-flash');
-var session = require('express-session');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var mongo = require('mongodb');
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/nodeapp');
-var db = mongoose.connection;
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const exphbs = require('express-handlebars');
+const expressValidator = require('express-validator');
+const flash = require('connect-flash');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
 
-var app = express();
+const routes = require('./routes/index');
+const users = require('./routes/users');
+
+const app = express();
 
 app.set('views', path.join(__dirname, 'views'));
 app.engine('handlebars', exphbs({defaultLayout: 'layout'}));
@@ -42,8 +39,8 @@ app.use(passport.session());
 
 //express validator
 app.use(expressValidator({
-	errorFormatter: function(param,msg,value) {
-		var namespace = param.split('.'),
+	errorFormatter: (param,msg,value) => {
+		let namespace = param.split('.'),
 			root = namespace.shift(),
 			formParam = root;
 		while(namespace.length) {
@@ -61,7 +58,7 @@ app.use(expressValidator({
 app.use(flash());
 
 //global variables
-app.use(function(req, res, next){
+app.use((req, res, next) => {
 	res.locals.success_msg = req.flash('success_msg');
 	res.locals.error_msg = req.flash('error_msg');
 	res.locals.error = req.flash('error');
@@ -76,7 +73,7 @@ app.use('/users', users);
 app.set('port', (process.env.PORT || 3000));
 
 //start a server
-app.listen(app.get('port'), function(){
+app.listen(app.get('port'), () => {
 	console.log('Server started on port '+app.get('port'));
 });
 

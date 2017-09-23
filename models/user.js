@@ -1,46 +1,58 @@
-var mongoose = require('mongoose');
-var bcrypt = require('bcryptjs');
+const mongo = require('mongodb');
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/nodeapp');
+const db = mongoose.connection;
+const bcrypt = require('bcryptjs');
 
 //User Schema
-var UserSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
 	username: {
 		type: String,
-		index: true
+		//unique: true,
+		index: true,
+		//dropDups: true
 	},
 	password: {
 		type: String
 	},
 	email: {
-		type: String
+		type: String,
+		//unique: true,
+		//dropDups: true
 	},
 	name: {
 		type: String
 	}
 });
 
-var User = module.exports = mongoose.model('User', UserSchema);
+const User = module.exports = mongoose.model('User', UserSchema);
 
-module.exports.createUser = function(newUser, callback) {
-	bcrypt.genSalt(10, function(err, salt) {
-		bcrypt.hash(newUser.password, salt, function(err, hash) {
+module.exports.createUser = (newUser, callback)=> {
+	bcrypt.genSalt(10, (err, salt)=> {
+		bcrypt.hash(newUser.password, salt, (err, hash)=> {
 			newUser.password = hash;
 			newUser.save(callback);
 		});
 	});
 }
 
-module.exports.getUserByUsername = function(username, callback){
-	var query = {username: username};
+module.exports.getUserByUsername = (username, callback)=>{
+	let query = {username: username};
 	User.findOne(query, callback);
 }
 
-module.exports.comparePassword = function(candidatePassword, hash, callback){
-	bcrypt.compare(candidatePassword, hash, function(err, isMatch){
+module.exports.getUserByEmail = (email, callback)=>{
+	let query = {email: email};
+	User.findOne(query, callback);
+}
+
+module.exports.comparePassword = (candidatePassword, hash, callback)=>{
+	bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
 		if(err) throw err;
 		callback(null, isMatch);
 	});
 }
 
-module.exports.getUserByID = function(id, callback){
+module.exports.getUserByID = (id, callback)=>{
 	User.findById(id, callback);
 }
